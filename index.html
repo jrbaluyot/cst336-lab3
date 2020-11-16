@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <title>Sign Up Page</title>
+        <link href="css/styles.css" rel="stylesheet" type="text/css"/>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <header>
+        <h1 id="signup"> Sign Up</h1>
+        </header>
+        
+        <form id="signupForm" action="welcome.html">
+        First Name: <input type="text" name="fName"><br>
+        Last Name:  <input type="text" name="lName"><br>
+        Gender:     <input type="radio" name="gender" value "m">Male
+                    <input type="radio" name="gender" value "f">Female<br>
+        
+        Zipcode:    <input type="text" id="zip" name="zip"><span id="zipcodeError"></span><br>
+        City:       <span id="city"></span><br>
+        Latitude:   <span id="latitude"></span><br>
+        Longitude:  <span id="longitude"></span><br><br>
+        
+        State:
+        <select id="state" name="state">
+            <option>Select One</option>
+        </select><br>
+        
+        Select a County: <select id="county"></select><br>
+        
+        Desired Username:   <input type="text" id="username" name="username"><br>
+                            <span id="usernameError"></span><br>
+                            
+        Password:           <input type="password" id="password" name="password"><br>
+        Password Again:     <input type="password" id="passwordAgain"><span id="passwordAgainError"></span><br /><br>
+        
+        <input id="submit" type="submit" value="Sign Up!">
+        </form>
+        <script>
+            
+            
+            var usernameAvailable = false;
+            
+            populateStateList();
+            
+            async function populateStateList() {
+                
+                let url = `https://cst336.herokuapp.com/projects/api/state_abbrAPI.php`;
+                let response = await fetch(url);
+                let data = await response.json();
+                
+                data.forEach(function(i) {
+                   $("#state").append(`<option value="${i.usps}"> ${i.state} </option>`); 
+                });
+            }
+            
+            //Displaying city from API after typing a zip code
+            $("#zip").on("change", async function(){
+                
+                //alert($("#zip").val());
+                $("#zipcodeError").html("");
+                let zipCode = $("#zip").val();
+                let url = `https://itcdland.csumb.edu/~milara/ajax/cityInfoByZip?zip=${zipCode}`;
+                let response = await fetch(url);
+                let data = await response.json();
+                
+                if (data.city == null)
+                {
+                    $("#zipcodeError").html("zipcode invalid");
+                }
+                //console.log(data)
+                $("#city").html(data.city);
+                $("#latitude").html(data.latitude);
+                $("#longitude").html(data.longitude);
+                
+            });//zip
+            
+            $("#state").on("change", async function(){
+                
+                //alert($("#state").val());
+                let state = $("#state").val();
+                let url = `https://itcdland.csumb.edu/~milara/ajax/countyList?state=${state}`;
+                let response = await fetch(url);
+                let data = await response.json();
+                //console.log(data)
+                $("#county").html("<option>Select One</option>");
+                for (let i = 0; i < data.length; i++) {
+                    $("#county").append(`<option> ${data[i].county} </option>`);
+                }
+            });//state
+            
+            $("#username").on("change", async function(){
+                
+                //alert($("#username").val());
+                let state = $("#state").val();
+                let url = `https://cst336.herokuapp.com/projects/api/usernamesAPI.php?username=${username}`;
+                let response = await fetch(url);
+                let data = await response.json();
+                
+                if (data.available) {
+                    $("#usernameError").html("Username available");
+                    $("#usernameError").css("color", "green");
+                    usernameAvailable = true;
+                }
+                else {
+                    $("#usernameError").html("Username not available");
+                    $("#usernameError").css("color", "red");
+                    usernameAvailable = false;
+                }
+                
+            });//username
+            
+            $("#signupForm").on("submit", function(e) {
+               
+                //alert(usernameAvailable);
+                if (!isFormValid()) {
+                e.preventDefault();
+                }
+            });
+            
+            function isFormValid(){
+                
+                var isValid = true;
+                
+                if (!usernameAvailable) {
+                    isValid = false;
+                }
+                
+                if ($("#username").val().length == 0) {
+                    isValid = false;
+                    $("#usernameError").html("Username is required");
+                }
+                
+                if ($("#password").val() != $("#passwordAgain").val()){
+                    $("#passwordAgainError").html("Password Mismatch!");
+                    isValid = false;
+                }
+                
+                if ($("#password").val().length < 6) {
+                    $("#passwordAgainError").html("Password not long enough!");
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+        </script>
+        
+        <footer>
+            <hr>
+            CST336 Internet Programming. 2020&copy; Baluyot <br />
+            <strong>Disclaimer:</strong> The information in this webpage is fictitious. <br />
+            It is used for academic purposes only. <br />
+            </footer>
+    </body>
+</html>

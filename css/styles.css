@@ -1,0 +1,46 @@
+h1 {
+    font-size: 2em;
+    font-family: 'Bebas Neue', cursive;
+}
+
+body {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.5em;
+    display: block;
+    padding: 5%;
+}
+
+footer {
+    font-family: 'Bebas Neue', cursive;
+    font-size: .5em;
+    color: #2c63d1;
+    text-align: center;
+    padding: 2%;
+}
+
+#submit {
+    padding: 5px;
+    font-size: 1.2em;
+}
+
+#passwordAgainError, #usernameError  {
+    color: #a82716;
+    padding: 1%;
+}
+
+#zipcodeError{
+    color: red;
+    padding: 1%;
+}
+
+#signup {
+    border-bottom: 5px solid black;
+}
+
+#welcome {
+    color: green;
+    text-align: center;
+    padding: 10%;
+}
+
+
